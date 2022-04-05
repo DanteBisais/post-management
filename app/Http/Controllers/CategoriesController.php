@@ -24,7 +24,7 @@ class CategoriesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Category $category)
     {
         return view('categories.create');
     }
@@ -37,10 +37,10 @@ class CategoriesController extends Controller
      */
     public function store(Request $request)
     {
-        Category::create(array_merge($request->only('id', 'name')));
-
-        return redirect()->route('categories.index')
-            ->withSuccess(__('Category created successfully.'));
+//        Category::create(array_merge($request->only('id', 'name')));
+//
+//        return redirect()->route('categories.index')
+//            ->withSuccess(__('Category created successfully.'));
     }
 
     /**

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
-//use App\Models\Category;
+use App\Models\Category;
 use App\Models\PostCategory;
 use Illuminate\Http\Request;
 
@@ -12,7 +12,7 @@ class PostsController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
     public function index()
     {
@@ -42,14 +42,15 @@ class PostsController extends Controller
      */
     public function store(Request $request)
     {
-        Post::create(array_merge($request->only('title', 'description', 'body'),[
+        $post = Post::create(array_merge($request->only('title', 'description', 'body'),[
             'user_id' => auth()->id()
         ]));
 
-        Category::create(array_merge($request->only('name'),[
-            'user_id' => auth()->id()
-        ]));
+        //$category_id = Category::find($id);
 
+       $category_id = $request->input('category');
+
+        $post->categories()->attach($category_id);
         return redirect()->route('posts.index')
             ->withSuccess(__('Post created successfully.'));
     }
@@ -58,14 +59,14 @@ class PostsController extends Controller
      * Display the specified resource.
      *
      * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
     public function show(Post $post)
     {
         // $post = Post::find($id);
         var_dump($post->Categories);
         $categories = Post::find(1)->categories()->orderBy('name')->get();
-  
+
         return view('posts.show', [
             'post' => $post
         ]);
@@ -77,10 +78,12 @@ class PostsController extends Controller
      * @param  \App\Models\Post  $post
      * @return \Illuminate\Http\Response
      */
-    public function edit(Post $post)
+    public function edit(Post $post, Category $category)
     {
         return view('posts.edit', [
-            'post' => $post
+            'post' => $post,
+            'category' => $category
+
         ]);
     }
 
@@ -93,7 +96,17 @@ class PostsController extends Controller
      */
     public function update(Request $request, Post $post)
     {
+
         $post->update($request->only('title', 'description', 'body'));
+//        $category_id = $request->input('category');
+//        $post->update($request->except(['_token', 'categories']));
+//        $post->categories()->sync([1,2,3]);
+        //$post->categories()->syncWithoutDetaching($category_id);
+
+        $category_id = $request->input('category');
+        $post->categories()->syncWithoutDetaching($category_id);
+
+
 
         return redirect()->route('posts.index')
             ->withSuccess(__('Post updated successfully.'));

@@ -12,6 +12,7 @@ class Post extends Model
 
     protected $table = 'posts';
 
+
     protected $fillable = [
         'user_id',
         'title',
@@ -24,14 +25,39 @@ class Post extends Model
 
     // }
     function categories() {
-        return $this->belongsToMany('App\Models\Category');
+        return $this->belongsToMany('App\Models\Category', 'category_post', 'post_id','category_id');
     }
 
-    // function posts(){
-    //     return $this->belongsToMany('App\Category');
-    // }
+    public function postCategory()
+    {
+        return $this->belongsTo(\App\Models\Category::class, 'category_id');
 
-    // public function getPostCategory(){
-    //     return $this->belongsToMany('App\Model\Category', 'post_category', 'post_id', 'id');
-    // }
+    }
+
+
+//
+//     public function roles()
+//     {
+//         return $this->belongsToMany('App\Models\Role');
+//     }
+
+//     /**
+//      * Check if the user has a role
+//      * @param string $role
+//      * @return bool
+//      */
+//     public function hasAnyRole(string $role)
+//     {
+//         return null !== $this->roles()->where('name', $role)->first();
+//     }
+//
+//     /**
+//      * Check the user has any given role
+//      * @param array $role
+//      * @return bool
+//      */
+//     public function hasAnyRoles(array $role)
+//     {
+//         return null !== $this->roles()->whereIn('name', $role)->first();
+//     }
 }

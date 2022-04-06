@@ -17,7 +17,7 @@
                         type="text"
                         class="form-control"
                         name="title"
-                        placeholder="Title" required>
+                        placeholder="Title">
 
                     @if ($errors->has('title'))
                         <span class="text-danger text-left">{{ $errors->first('title') }}</span>
@@ -30,7 +30,7 @@
                         type="text"
                         class="form-control"
                         name="description"
-                        placeholder="Description" required>
+                        placeholder="Description">
 
                     @if ($errors->has('description'))
                         <span class="text-danger text-left">{{ $errors->first('description') }}</span>
@@ -41,7 +41,7 @@
                     <label for="body" class="form-label">Body</label>
                     <textarea class="form-control"
                         name="body"
-                        placeholder="Body" required>{{ old('body') }}</textarea>
+                        placeholder="Body">{{ old('body') }}</textarea>
 
                     @if ($errors->has('body'))
                         <span class="text-danger text-left">{{ $errors->first('body') }}</span>
@@ -52,7 +52,7 @@
                     @php($categories=\App\Models\Category::all())
                     @foreach($categories as $category)
                         <div class="form-check">
-                          <input class="form-check-input" name="category"
+                          <input class="form-check-input" name="category[]"
                                   type="checkbox" value="{{ $category->id }}" id="{{ $category->name }}"
                                   @isset($post) @if(in_array($category->id, $post->category->pluck('id')->toArray())) checked @endif @endisset>
                           <label class="form-check-label" for="{{ $category->name }}">

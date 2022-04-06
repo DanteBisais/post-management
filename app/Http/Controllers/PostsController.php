@@ -27,11 +27,11 @@ class PostsController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
     public function create()
     {
-        return view('posts.create');
+        return view('posts.create', ['categories' => Category::all()]);
     }
 
     /**
@@ -42,15 +42,22 @@ class PostsController extends Controller
      */
     public function store(Request $request)
     {
-        $post = Post::create(array_merge($request->only('title', 'description', 'body'),[
-            'user_id' => auth()->id()
-        ]));
+        $validatedData = $request->validate([
+            'title' => 'required',
+            'description' => 'required|min:5',
+            'body' => 'required'
+       ]);
+//        $post = Post::create(array_merge($request->only('title', 'description', 'body'),[
+//        'user_id' => auth()->id()
+//        ]));
+
+        $post = Post::create(array_merge($validatedData, ['user_id' => auth()->id()]));
 
         //$category_id = Category::find($id);
 
-       $category_id = $request->input('category');
+       //$category_id = $request->input('category');
 
-        $post->categories()->attach($category_id);
+        $post->categories()->attach($request->input('category'));
         return redirect()->route('posts.index')
             ->withSuccess(__('Post created successfully.'));
     }
@@ -103,9 +110,9 @@ class PostsController extends Controller
 //        $post->categories()->sync([1,2,3]);
         //$post->categories()->syncWithoutDetaching($category_id);
 
-        $category_id = $request->input('category');
-        $post->categories()->syncWithoutDetaching($category_id);
-
+       // $category_id = $request->input('category');
+        //$post->categories()->syncWithoutDetaching($category_id);
+        $post->categories()->sync($request->category);
 
 
         return redirect()->route('posts.index')
